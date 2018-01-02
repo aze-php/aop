@@ -1,0 +1,33 @@
+{
+    "name": "aze/aop",
+    "type": "library",
+    "description": "AOP adapter for an AZE application",
+    "keywords": [
+        "php",
+        "aze",
+        "aop"
+    ],
+    "homepage": "https://github.com/aze-php/aop",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "LE BOULC'H Brice",
+            "email": "airmanbzh@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "AZE\\": "src/AZE"
+        }
+    },
+    "support": {
+        "issues": "https://github.com/aze-php/aop/issues"
+    },
+    "require-dev": {
+        "aze/aze": "*"
+    },
+    "require": {
+        "goaop/framework": "2.*"
+    }
+}
