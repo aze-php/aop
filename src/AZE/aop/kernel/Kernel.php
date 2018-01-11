@@ -1,9 +1,9 @@
 <?php
 namespace AZE\aop\kernel;
 
+use Go\Aop\Aspect;
 use Go\Core\AspectKernel;
 use Go\Core\AspectContainer;
-use Go\Lang\Annotation\Aspect;
 
 /**
  * Application Aspect Kernel
@@ -21,7 +21,7 @@ class Kernel extends AspectKernel
      */
     protected function configureAop(AspectContainer $container)
     {
-        $classes = \AZE\aop\utils\ClassFinder::getClassesInNamespace("AZE\\aop\\aspect");
+        $classes = forward_static_call_array(array('\AZE\aop\utils\ClassFinder','getClassesInNamespace'), array("AZE\\aop\\aspect"));
         foreach ($classes as $class) {
             $object = new $class;
             if ($object instanceof Aspect) {

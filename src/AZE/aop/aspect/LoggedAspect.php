@@ -1,7 +1,6 @@
 <?php
 namespace AZE\aop\aspect;
 
-use AZE\core\Session;
 use Go\Aop\Aspect;
 use Go\Aop\Intercept\MethodInvocation;
 use Go\Lang\Annotation\Before;

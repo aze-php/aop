@@ -7,13 +7,16 @@ class ClassFinder
 
     public static function getClassesInNamespace($namespace)
     {
-        $files = scandir(self::getNamespaceDirectory($namespace));
+        $dir = self::getNamespaceDirectory($namespace);
+        $files = self::getFilesInDirectory($dir, true);
 
-        $classes = array_map(function($file) use ($namespace){
+        $files = array_map(function ($file) use ($dir) {return str_replace($dir . DIRECTORY_SEPARATOR, '', $file); }, $files);
+
+        $classes = array_map(function ($file) use ($namespace){
             return $namespace . '\\' . str_replace('.php', '', $file);
         }, $files);
 
-        return array_filter($classes, function($possibleClass){
+        return array_filter($classes, function ($possibleClass){
             return class_exists($possibleClass);
         });
     }
@@ -33,18 +36,38 @@ class ClassFinder
         $composerNamespaces = self::getDefinedNamespaces();
 
         $namespaceFragments = explode('\\', $namespace);
-        $undefinedNamespaceFragments = [];
+        $undefinedFragments = [];
 
         while($namespaceFragments) {
             $possibleNamespace = implode('\\', $namespaceFragments) . '\\';
 
             if(array_key_exists($possibleNamespace, $composerNamespaces)){
-                return realpath(self::$dir . $composerNamespaces[$possibleNamespace] . '/' . implode('/', array_reverse($undefinedNamespaceFragments)));
+                return realpath(self::$dir . $composerNamespaces[$possibleNamespace] . '/' . implode('/', array_reverse($undefinedFragments)));
             }
 
-            $undefinedNamespaceFragments[] = array_pop($namespaceFragments);
+            $undefinedFragments[] = array_pop($namespaceFragments);
         }
 
         return false;
+    }
+
+    private static function getFilesInDirectory($dir, $searchSubdirectory)
+    {
+        $files = array();
+        $searchSubdirectory = $searchSubdirectory ?: false;
+        if (is_dir($dir) && is_readable($dir)) {
+            $files = array_map(function ($file) use ($dir) { return $dir . DIRECTORY_SEPARATOR . $file; }, scandir($dir));
+            $files = array_filter($files, function ($file) { return basename($file) !== '.' && basename($file) !== '..'; });
+
+            if ($searchSubdirectory) {
+                foreach ($files as $file) {
+                    if (is_dir($file) && is_readable($file)) {
+                        $files = array_merge($files, self::getFilesInDirectory($file, true));
+                    }
+                }
+            }
+        }
+
+        return $files;
     }
 }
